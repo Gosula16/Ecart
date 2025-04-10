@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>eCart - Enhanced Shopping Experience</title>
+  <style>
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --accent: #f72585;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #4cc9f0;
+      --danger: #e63946;
+      --warning: #ffbe0b;
+      --shadow: 0 4px 6px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('C:/Users/gv637/OneDrive/Desktop/Ebooks/Cherry/back.jpg'); /* replace with your actual image path */
+      background-size: cover;                 /* makes sure the image covers the entire background */
+      background-position: center;            /* centers the image */
+      background-repeat: no-repeat;  
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    /* Navigation */
+    .navbar {
+      background-color: var(--primary);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .navbar-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+    
+    .nav-link:hover {
+      color: rgb(255, 148, 148);
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .cart-icon {
+      position: relative;
+    }
+    
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: var(--accent);
+      color: white;
+      font-size: 0.7rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .user-status {
+      color: white;
+      margin-left: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    /* Main Content */
+    main {
+      min-height: calc(100vh - 70px);
+      padding: 2rem 0;
+    }
+    
+    .section {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Category Section */
+    .section-title {
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      color: var(--dark);
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background-color: var(--primary);
+    }
+    
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .category {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .category:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    
+    .category-img {
+      height: 150px;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .category-content {
+      padding: 1.2rem;
+      text-align: center;
+    }
+    
+    .category-name {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .category-desc {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+    
+    /* Products Section */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .back-btn {
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 500;
+    }
+    
+    .filter-sort {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .filter-sort select {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      cursor: pointer;
+    }
+    
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .product {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .product:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    
+    .product-img {
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .product-content {
+      padding: 1.2rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .product-category {
+      color: var(--primary);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .product-name {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .product-desc {
+      color: #6c757d;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      flex-grow: 1;
+    }
+    
+    .product-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+    
+    .product-price {
+      font-weight: bold;
+      color: var(--dark);
+      font-size: 1.2rem;
+    }
+    
+    .product-rating {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--warning);
+    }
+    
+    .product-btn {
+      display: block;
+      width: 100%;
+      padding: 0.8rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .product-btn:hover {
+      background-color: var(--secondary);
+    }
+    
+    /* Cart Section */
+    .cart-empty {
+      text-align: center;
+      padding: 3rem;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    
+    .cart-empty p {
+      color: #6c757d;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .cart-items {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .cart-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto auto;
+      gap: 1rem;
+      align-items: center;
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: var(--shadow);
+    }
+    
+    .cart-item-img {
+      width: 100%;
+      height: 80px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 4px;
+    }
+    
+    .cart-item-details h3 {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .cart-item-details p {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+    
+    .cart-item-price {
+      font-weight: bold;
+    }
+    
+    .cart-item-quantity {
+      display: flex;
+      align-items: center;
+    }
+    
+    .quantity-btn {
+      width: 25px;
+      height: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f1f1f1;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .quantity-input {
+      width: 40px;
+      text-align: center;
+      margin: 0 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0.2rem;
+    }
+    
+    .cart-summary {
+      margin-top: 2rem;
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+    }
+    
+    .summary-total {
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-top: 1px solid #ddd;
+      padding-top: 0.8rem;
+      margin-top: 0.8rem;
+    }
+    
+    .checkout-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      background-color: var(--success);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .checkout-btn:hover {
+      opacity: 0.9;
+    }
+    
+    /* Auth Forms */
+    .auth-form {
+      max-width: 400px;
+      margin: 2rem auto;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+    
+    .form-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .form-btn:hover {
+      background-color: var(--secondary);
+    }
+    
+    .form-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    
+    .form-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    /* Product Detail */
+    .product-detail {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    
+    .product-detail-img {
+      height: 400px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    
+    .product-detail-content {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .product-detail-category {
+      color: var(--primary);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .product-detail-name {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .product-detail-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    
+    .product-detail-desc {
+      color: #6c757d;
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+    
+    .product-detail-meta {
+      margin-bottom: 1.5rem;
+    }
+    
+    .meta-item {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .meta-label {
+      font-weight: 500;
+      min-width: 100px;
+    }
+    
+    .product-detail-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: auto;
+    }
+    
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .quantity-selector button {
+      width: 40px;
+      height: 40px;
+      background-color: #f1f1f1;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .quantity-selector input {
+      width: 60px;
+      height: 40px;
+      border: none;
+      text-align: center;
+      font-size: 1rem;
+    }
+    
+    .add-to-cart-btn {
+      flex-grow: 1;
+      padding: 0.8rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .add-to-cart-btn:hover {
+      background-color: var(--secondary);
+    }
+    
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    
+    .toast {
+      background-color: white;
+      color: var(--dark);
+      padding: 1rem;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      max-width: 350px;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast-success {
+      border-left: 4px solid var(--success);
+    }
+    
+    .toast-error {
+      border-left: 4px solid var(--danger);
+    }
+    
+    .toast-icon {
+      font-size: 1.2rem;
+    }
+    
+    .toast-content {
+      flex-grow: 1;
+    }
+    
+    .toast-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #aaa;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .navbar-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .product-detail {
+        grid-template-columns: 1fr;
+      }
+      
+      .cart-item {
+        grid-template-columns: 80px 1fr;
+      }
+      
+      .cart-item-price,
+      .cart-item-quantity {
+        grid-column: 1 / span 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="container navbar-content">
+      <a href="#" class="brand" onclick="navigate('home')">
+        <span>eCart</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#" class="nav-link" onclick="navigate('home')">Home</a>
+        <a href="#" class="nav-link" id="loginLink" onclick="navigate('login')">Login</a>
+        <a href="#" class="nav-link" id="signupLink" onclick="navigate('signup')">Signup</a>
+        <a href="#" class="nav-link" id="profileLink" style="display:none" onclick="navigate('profile')">My Profile</a>
+        <a href="#" class="nav-link cart-icon" onclick="navigate('cart')">
+          Cart
+          <span class="cart-badge" id="cartCounter">0</span>
+        </a>
+      </nav>
+      <div class="user-status" id="userStatus"></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- Home -->
+      <section id="home" class="section active">
+        <h2 class="section-title">Shop by Category</h2>
+        <div class="categories" id="categories-list">
+          <!-- Categories will be loaded here -->
+        </div>
+      </section>
+
+      <!-- Products -->
+      <section id="products" class="section">
+        <div class="section-header">
+          <h2 class="section-title">Products - <span id="category-name"></span></h2>
+          <div class="back-btn" onclick="navigate('home')">
+            <span>←</span> Back to Categories
+          </div>
+        </div>
+        <div class="filter-sort">
+          <select id="sort-select" onchange="sortProducts()">
+            <option value="default">Sort by</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Rating</option>
+          </select>
+          <select id="filter-select" onchange="filterProducts()">
+            <option value="all">All Products</option>
+            <option value="in-stock">In Stock</option>
+            <option value="on-sale">On Sale</option>
+          </select>
+        </div>
+        <div class="products" id="product-list"></div>
+      </section>
+
+      <!-- Product Detail -->
+      <section id="product-detail" class="section">
+        <div class="section-header">
+          <h2 class="section-title">Product Details</h2>
+          <div class="back-btn" id="back-to-products">
+            <span>←</span> Back to Products
+          </div>
+        </div>
+        <div class="product-detail" id="product-detail-content">
+          <!-- Product detail will be loaded here -->
+        </div>
+      </section>
+
+      <!-- Cart -->
+      <section id="cart" class="section">
+        <h2 class="section-title">Your Shopping Cart</h2>
+        <div id="cart-content">
+          <div class="cart-empty" id="cart-empty">
+            <p>Your cart is empty</p>
+            <button class="form-btn" onclick="navigate('home')">Continue Shopping</button>
+          </div>
+          <div id="cart-items-container" style="display:none">
+            <div class="cart-items" id="cart-items"></div>
+            <div class="cart-summary">
+              <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">$0.00</span>
+              </div>
+              <div class="summary-row">
+                <span>Shipping</span>
+                <span id="cart-shipping">$0.00</span>
+              </div>
+              <div class="summary-row">
+                <span>Tax</span>
+                <span id="cart-tax">$0.00</span>
+              </div>
+              <div class="summary-row summary-total">
+                <span>Total</span>
+                <span id="cart-total">$0.00</span>
+              </div>
+              <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Login -->
+      <section id="login" class="section">
+        <div class="auth-form">
+          <h2 class="section-title">Login to Your Account</h2>
+          <div class="form-group">
+            <label class="form-label" for="login-username">Username</label>
+            <input class="form-input" type="text" id="login-username" placeholder="Enter your username" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <input class="form-input" type="password" id="login-password" placeholder="Enter your password" />
+          </div>
+          <button class="form-btn" onclick="loginUser()">Login</button>
+          <div class="form-footer">
+            Don't have an account? <a href="#" onclick="navigate('signup')">Sign up</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Signup -->
+      <section id="signup" class="section">
+        <div class="auth-form">
+          <h2 class="section-title">Create an Account</h2>
+          <div class="form-group">
+            <label class="form-label" for="signup-name">Full Name</label>
+            <input class="form-input" type="text" id="signup-name" placeholder="Enter your full name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-email">Email</label>
+            <input class="form-input" type="email" id="signup-email" placeholder="Enter your email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-username">Username</label>
+            <input class="form-input" type="text" id="signup-username" placeholder="Choose a username" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-password">Password</label>
+            <input class="form-input" type="password" id="signup-password" placeholder="Choose a password" />
+          </div>
+          <button class="form-btn" onclick="signupUser()">Create Account</button>
+          <div class="form-footer">
+            Already have an account? <a href="#" onclick="navigate('login')">Login</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Profile -->
+      <section id="profile" class="section">
+        <h2 class="section-title">My Profile</h2>
+        <div class="auth-form">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <div id="profile-username" class="form-input"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <div id="profile-name" class="form-input"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <div id="profile-email" class="form-input"></div>
+          </div>
+          <button class="form-btn" style="background-color: var(--danger)" onclick="logoutUser()">Logout</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // Data
+    const categoriesData = [
+      { 
+        id: 1, 
+        name: 'Electronics', 
+        image: 'https://media.istockphoto.com/id/1328836875/vector/realistic-electronic-devices-and-gadgets-in-isometry-vector-isometric-illustration-of.jpg?s=612x612&w=0&k=20&c=4iwItEQ1P3lhjl350QXRl5IrgC8ufDImaoc-7_H5vVA=',
+        description: 'Latest gadgets and tech devices'
+      },
+      { 
+        id: 2, 
+        name: 'Fashion', 
+        image: 'https://www.istockphoto.com/photo/full-size-photo-of-carefree-overjoyed-happy-woman-dance-motion-wear-lime-yellow-gm1720313840-540699828?searchscope=image%2Cfilm',
+        description: 'Trendy clothing and accessories'
+      },
+      { 
+        id: 3, 
+        name: 'Books', 
+        image: 'https://media.istockphoto.com/id/1411701868/photo/magic-book-with-glitter-open-book-with-lights-glowing-in-dark-background.jpg?s=612x612&w=0&k=20&c=-vGSj8f8tj6Zbj2mDZCABgP50rcLjqWw-KwxgDA2cYc=',
+        description: 'Best-selling books and novels'
+      },
+      { 
+        id: 4, 
+        name: 'Toys', 
+        image: 'pexels-pengwhan-1767434.jpg',
+        description: 'Fun toys for all ages'
+      },
+      { 
+        id: 5, 
+        name: 'Home & Kitchen', 
+        image: 'pexels-nguyendesigner-31479843.jpg',
+        description: 'Everything for your home'
+      },
+      { 
+        id: 6, 
+        name: 'Sports', 
+        image: 'Screenshot 2025-04-10 100800.png',
+        description: 'Gear for all sports enthusiasts'
+      }
+    ];
+
+    const productsData = {
+        'Electronics': [
+          {
+            id: 101,
+            name: 'Smartphone Pro Max',
+            description: 'Latest flagship smartphone with advanced features and powerful performance.',
+            price: 999.99,
+            image: 'https://www.apple.com/newsroom/images/2024/09/apple-debuts-iphone-16-pro-and-iphone-16-pro-max/article/Apple-iPhone-16-Pro-hero-geo-240909_inline.jpg.large_2x.jpg',
+            rating: 4.8,
+            stock: 15,
+            onSale: false,
+            specs: {
+              processor: 'Octa-core 2.8GHz',
+              memory: '8GB RAM',
+              storage: '256GB',
+              camera: '48MP + 12MP + 8MP'
+            }
+          },
+          {
+            id: 102,
+            name: 'Ultra HD Smart TV',
+            description: 'Crystal clear 4K resolution with smart features and voice control.',
+            price: 749.99,
+            image: 'https://cdn.thewirecutter.com/wp-content/media/2024/12/BVEST-32-INCH-TVS-2048px-2870-2x1-1.jpg?width=2048&quality=75&crop=2:1&auto=webp',
+            rating: 4.5,
+            stock: 8,
+            onSale: true,
+            salePrice: 649.99,
+            specs: {
+              display: '55-inch LED',
+              resolution: '4K Ultra HD',
+              connectivity: 'WiFi, Bluetooth, HDMI x3',
+              audio: 'Dolby Digital Plus'
+            }
+          },
+          {
+            id: 103,
+            name: 'Wireless Earbuds',
+            description: 'Premium sound quality with active noise cancellation.',
+            price: 129.99,
+            image: 'https://media.istockphoto.com/id/1194814887/photo/apple-airpods-wireless-bluetooth-headphones-and-charging-case.jpg?s=612x612&w=0&k=20&c=SJWyv7d3oBYyJBBpFzLCMWX5_yiT7siVb63O-Ctqv-Q=',
+            rating: 4.7,
+            stock: 23,
+            onSale: false,
+            specs: {
+              batteryLife: '30 hours with case',
+              connectivity: 'Bluetooth 5.2',
+              waterproof: 'IPX4',
+              features: 'Active Noise Cancellation'
+            }
+          },
+          {
+            id: 104,
+            name: 'Gaming Laptop',
+            description: 'High-performance laptop for gaming enthusiasts.',
+            price: 1299.99,
+            image: 'https://media.istockphoto.com/id/906347962/photo/gaming-laptop-with-connected-mouse-and-headphones.jpg?s=612x612&w=0&k=20&c=DmXBvbBRJgCVpWh8rhtnJzZY6k4FANPx_pg3_PhTIeA=',
+            rating: 4.6,
+            stock: 5,
+            onSale: true,
+            salePrice: 1199.99,
+            specs: {
+              processor: 'Intel Core i7',
+              gpu: 'NVIDIA RTX 3060',
+              memory: '16GB DDR4',
+              storage: '1TB SSD'
+            }
+          },
+          {
+            id: 105,
+            name: 'Smart Watch',
+            description: 'Track fitness, monitor health, and stay connected.',
+            price: 199.99,
+            image: 'https://media.istockphoto.com/id/1333053202/photo/set-of-smart-watches-with-colorful-straps-on-black-background.jpg?s=612x612&w=0&k=20&c=HqvM-lEyuiSW6sXkA6p-MhrtSN9Yb00M1WHetIzRJI4=',
+            rating: 4.4,
+            stock: 12,
+            onSale: false,
+            specs: {
+              display: '1.4-inch AMOLED',
+              batteryLife: 'Up to 7 days',
+              waterproof: '5ATM',
+              sensors: 'Heart rate, SpO2, accelerometer'
+            }
+          },
+          {
+            id: 106,
+            name: 'Bluetooth Speaker',
+            description: 'Portable speaker with deep bass and long battery life.',
+            price: 89.99,
+            image: 'https://media.istockphoto.com/id/1345322275/photo/close-up-on-hand-using-phone-connecting-speaker-bluetooth.jpg?s=612x612&w=0&k=20&c=ND6uoV2CkYaoMFEGju8M8UnJEFnvNQaCas8U6g11q7s=',
+            rating: 4.6,
+            stock: 30,
+            onSale: true,
+            salePrice: 79.99,
+            specs: {
+              power: '20W',
+              batteryLife: '12 hours',
+              waterproof: 'IPX7',
+              connectivity: 'Bluetooth 5.0'
+            }
+          },
+          {
+            id: 107,
+            name: '4K Action Camera',
+            description: 'Capture adventures in stunning 4K resolution.',
+            price: 149.99,
+            image: 'https://media.istockphoto.com/id/1222834189/video/camera-lens.jpg?s=640x640&k=20&c=R0y7omNenp_sgmtco7ytcKIfNgNkuKV58cAxbc1ge_A=',
+            rating: 4.5,
+            stock: 18,
+            onSale: false,
+            specs: {
+              resolution: '4K 60fps',
+              waterproof: 'Up to 30m',
+              batteryLife: '2 hours',
+              storage: 'MicroSD up to 128GB'
+            }
+          },
+          {
+            id: 108,
+            name: 'Wireless Gaming Mouse',
+            description: 'Precision mouse for competitive gaming.',
+            price: 59.99,
+            image: 'https://media.istockphoto.com/id/1272531670/photo/concept-design-for-esports-cyber-sports-professional-game-mouse-on-hexagon-pattern-background.jpg?s=612x612&w=0&k=20&c=SQ_Jcajxbv7NLkuYuBVXYrRGS5cV8k2Ld7Gk7yjntn0=',
+            rating: 4.7,
+            stock: 25,
+            onSale: true,
+            salePrice: 49.99,
+            specs: {
+              dpi: '16000',
+              buttons: '6 programmable',
+              batteryLife: '70 hours',
+              connectivity: '2.4GHz wireless'
+            }
+          },
+          {
+            id: 109,
+            name: 'Tablet X10',
+            description: 'Versatile tablet for work and entertainment.',
+            price: 299.99,
+            image: 'https://media.istockphoto.com/id/1131835148/vector/modern-tablet-computer-stand-with-blank-screen-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=gt3AIDcFNVOAU4urBUdgzdYK6_tCBIwYHOoAQ17UTcQ=',
+            rating: 4.4,
+            stock: 10,
+            onSale: false,
+            specs: {
+              display: '10.5-inch IPS',
+              processor: 'Octa-core 2.0GHz',
+              storage: '128GB',
+              batteryLife: '10 hours'
+            }
+          },
+          {
+            id: 110,
+            name: 'Smart Home Hub',
+            description: 'Control your smart devices from one hub.',
+            price: 129.99,
+            image: 'https://via.placeholder.com/400/3498db/FFFFFF?text=Smart+Hub',
+            rating: 4.3,
+            stock: 15,
+            onSale: true,
+            salePrice: 109.99,
+            specs: {
+              compatibility: 'Alexa, Google Home',
+              connectivity: 'WiFi, Zigbee',
+              power: 'USB-C',
+              features: 'Voice control'
+            }
+          }
+        ],
+        'Fashion': [
+          {
+            id: 201,
+            name: 'Classic Leather Jacket',
+            description: 'Timeless leather jacket that never goes out of style.',
+            price: 199.99,
+            image: 'https://media.istockphoto.com/id/1354251572/photo/woman-black-leather-jacket-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=YWIQdgb0n1C86BxwZVeD8Exx_c6MfQf1emtZKGLW4Ng=',
+            rating: 4.7,
+            stock: 10,
+            onSale: true,
+            salePrice: 179.99,
+            specs: {
+              material: 'Genuine Leather',
+              color: 'Black',
+              sizes: ['S', 'M', 'L', 'XL']
+            }
+          },
+          {
+            id: 202,
+            name: 'Designer Handbag',
+            description: 'Elegant handbag for all occasions.',
+            price: 249.99,
+            image: 'https://media.istockphoto.com/id/626234448/photo/luxury-handbags.jpg?s=612x612&w=0&k=20&c=Zz4OsUc67DLv5wLftwYd1_NeYmQmb4RCBuaCVttpM4w=',
+            rating: 4.8,
+            stock: 7,
+            onSale: false,
+            specs: {
+              material: 'Premium Leather',
+              color: 'Beige',
+              dimensions: '12" x 8" x 5"'
+            }
+          },
+          {
+            id: 203,
+            name: 'Running Shoes',
+            description: 'Lightweight and comfortable running shoes.',
+            price: 99.99,
+            image: 'https://media.istockphoto.com/id/1407127841/photo/white-sneaker-with-colored-accents-on-a-green-gradient-background-mens-fashion-sport-shoe-air.jpg?s=612x612&w=0&k=20&c=h4PYQPT0vzv3QOgAHql4eSdbnfHdmgm5ewURKdzqk6c=',
+            rating: 4.6,
+            stock: 20,
+            onSale: true,
+            salePrice: 79.99,
+            specs: {
+              material: 'Mesh',
+              color: 'Blue',
+              sizes: [6, 7, 8, 9, 10, 11]
+            }
+          },
+          {
+            id: 204,
+            name: 'Woolen Scarf',
+            description: 'Keep warm with this stylish woolen scarf.',
+            price: 49.99,
+            image: 'https://media.istockphoto.com/id/1158244924/photo/beautiful-woman-hiding-face-in-woolen-scarf.jpg?s=612x612&w=0&k=20&c=5MK1qJIbrIwFGrXJEpv2XioPxahkQj9n4YZFq80Ibeo=',
+            rating: 4.5,
+            stock: 15,
+            onSale: false,
+            specs: {
+              material: '100% Wool',
+              color: 'Gray',
+              length: '70 inches'
+            }
+          },
+          {
+            id: 205,
+            name: 'Sunglasses',
+            description: 'Trendy sunglasses with UV protection.',
+            price: 59.99,
+            image: 'https://media.istockphoto.com/id/1791114340/photo/sunglasses-and-glasses-sale-concept-trendy-sunglasses-on-gray-background-with-golden-palm.jpg?s=612x612&w=0&k=20&c=LSR7mSoEqRrl0G7nwiK1ykyBKzGYBwVw5TbTWGtebLM=',
+            rating: 4.4,
+            stock: 18,
+            onSale: true,
+            salePrice: 49.99,
+            specs: {
+              frameMaterial: 'Metal',
+              lensType: 'Polarized',
+              color: 'Black'
+            }
+          },
+          {
+            id: 206,
+            name: 'Denim Jeans',
+            description: 'Classic slim-fit jeans for everyday wear.',
+            price: 69.99,
+            image: 'https://media.istockphoto.com/id/980725304/photo/woman-checking-her-body.jpg?s=612x612&w=0&k=20&c=kfntloRPrYYq3BUQaI9_pbth3dXSIupkLb6TDrBPcfo=',
+            rating: 4.6,
+            stock: 25,
+            onSale: false,
+            specs: {
+              material: '100% Cotton',
+              color: 'Dark Blue',
+              sizes: ['30', '32', '34', '36']
+            }
+          },
+          {
+            id: 207,
+            name: 'Winter Coat',
+            description: 'Warm and stylish coat for cold weather.',
+            price: 129.99,
+            image: 'https://via.placeholder.com/400/2c3e50/FFFFFF?text=Winter+Coat',
+            rating: 4.7,
+            stock: 12,
+            onSale: true,
+            salePrice: 109.99,
+            specs: {
+              material: 'Polyester/Wool Blend',
+              color: 'Navy',
+              sizes: ['M', 'L', 'XL']
+            }
+          },
+          {
+            id: 208,
+            name: 'Graphic Tee',
+            description: 'Cool t-shirt with unique graphic print.',
+            price: 29.99,
+            image: 'https://via.placeholder.com/400/e74c3c/FFFFFF?text=Graphic+Tee',
+            rating: 4.5,
+            stock: 30,
+            onSale: false,
+            specs: {
+              material: 'Cotton',
+              color: 'White',
+              sizes: ['S', 'M', 'L', 'XL']
+            }
+          },
+          {
+            id: 209,
+            name: 'Leather Belt',
+            description: 'Durable belt with a sleek buckle.',
+            price: 39.99,
+            image: 'https://via.placeholder.com/400/8e44ad/FFFFFF?text=Belt',
+            rating: 4.4,
+            stock: 20,
+            onSale: true,
+            salePrice: 34.99,
+            specs: {
+              material: 'Genuine Leather',
+              color: 'Brown',
+              length: 'Adjustable'
+            }
+          },
+          {
+            id: 210,
+            name: 'Knit Sweater',
+            description: 'Cozy sweater for chilly days.',
+            price: 59.99,
+            image: 'https://via.placeholder.com/400/16a085/FFFFFF?text=Sweater',
+            rating: 4.6,
+            stock: 15,
+            onSale: false,
+            specs: {
+              material: 'Wool Blend',
+              color: 'Burgundy',
+              sizes: ['S', 'M', 'L']
+            }
+          }
+        ],
+        'Books': [
+          {
+            id: 301,
+            name: 'The Great Gatsby',
+            description: 'A classic novel by F. Scott Fitzgerald.',
+            price: 14.99,
+            image: 'https://media.istockphoto.com/id/1320058342/photo/open-book-title-page-the-great-gatsby.jpg?s=612x612&w=0&k=20&c=Vs3tGcJ9m4pCdLyN3cyus0fXbxidBjN00bj0uaxiHGg=',
+            rating: 4.9,
+            stock: 30,
+            onSale: false,
+            specs: {
+              author: 'F. Scott Fitzgerald',
+              genre: 'Fiction',
+              pages: 180
+            }
+          },
+          {
+            id: 302,
+            name: '1984',
+            description: 'A dystopian novel by George Orwell.',
+            price: 12.99,
+            image: 'https://www.istockphoto.com/photo/a-look-inside-the-infamous-room-101-of-george-orwells-1984-novel-gm1190794460-337688032?searchscope=image%2Cfilm',
+            rating: 4.8,
+            stock: 25,
+            onSale: true,
+            salePrice: 9.99,
+            specs: {
+              author: 'George Orwell',
+              genre: 'Dystopian',
+              pages: 328
+            }
+          },
+          {
+            id: 303,
+            name: 'To Kill a Mockingbird',
+            description: 'A novel by Harper Lee.',
+            price: 15.99,
+            image: 'https://via.placeholder.com/400/3498db/FFFFFF?text=To+Kill+a+Mockingbird',
+            rating: 4.9,
+            stock: 20,
+            onSale: false,
+            specs: {
+              author: 'Harper Lee',
+              genre: 'Fiction',
+              pages: 281
+            }
+          },
+          {
+            id: 304,
+            name: 'The Catcher in the Rye',
+            description: 'A novel by J.D. Salinger.',
+            price: 13.99,
+            image: 'https://via.placeholder.com/400/e74c3c/FFFFFF?text=The+Catcher+in+the+Rye',
+            rating: 4.7,
+            stock: 15,
+            onSale: false,
+            specs: {
+              author: 'J.D. Salinger',
+              genre: 'Fiction',
+              pages: 214
+            }
+          },
+          {
+            id: 305,
+            name: 'The Hobbit',
+            description: 'A fantasy novel by J.R.R. Tolkien.',
+            price: 16.99,
+            image: 'https://via.placeholder.com/400/9b59b6/FFFFFF?text=The+Hobbit',
+            rating: 4.8,
+            stock: 18,
+            onSale: true,
+            salePrice: 14.99,
+            specs: {
+              author: 'J.R.R. Tolkien',
+              genre: 'Fantasy',
+              pages: 310
+            }
+          },
+          {
+            id: 306,
+            name: 'Pride and Prejudice',
+            description: 'A romantic novel by Jane Austen.',
+            price: 11.99,
+            image: 'https://via.placeholder.com/400/16a085/FFFFFF?text=Pride+and+Prejudice',
+            rating: 4.7,
+            stock: 22,
+            onSale: false,
+            specs: {
+              author: 'Jane Austen',
+              genre: 'Romance',
+              pages: 279
+            }
+          },
+          {
+            id: 307,
+            name: 'Dune',
+            description: 'A sci-fi epic by Frank Herbert.',
+            price: 19.99,
+            image: 'https://via.placeholder.com/400/d35400/FFFFFF?text=Dune',
+            rating: 4.9,
+            stock: 17,
+            onSale: true,
+            salePrice: 17.99,
+            specs: {
+              author: 'Frank Herbert',
+              genre: 'Science Fiction',
+              pages: 412
+            }
+          },
+          {
+            id: 308,
+            name: 'Sapiens',
+            description: 'A brief history of humankind by Yuval Noah Harari.',
+            price: 24.99,
+            image: 'https://via.placeholder.com/400/3498db/FFFFFF?text=Sapiens',
+            rating: 4.8,
+            stock: 14,
+            onSale: false,
+            specs: {
+              author: 'Yuval Noah Harari',
+              genre: 'Non-fiction',
+              pages: 443
+            }
+          },
+          {
+            id: 309,
+            name: 'The Alchemist',
+            description: 'A philosophical novel by Paulo Coelho.',
+            price: 13.99,
+            image: 'https://via.placeholder.com/400/2ecc71/FFFFFF?text=The+Alchemist',
+            rating: 4.6,
+            stock: 20,
+            onSale: true,
+            salePrice: 11.99,
+            specs: {
+              author: 'Paulo Coelho',
+              genre: 'Fiction',
+              pages: 208
+            }
+          },
+          {
+            id: 310,
+            name: 'Atomic Habits',
+            description: 'A guide to building good habits by James Clear.',
+            price: 22.99,
+            image: 'https://via.placeholder.com/400/8e44ad/FFFFFF?text=Atomic+Habits',
+            rating: 4.9,
+            stock: 25,
+            onSale: false,
+            specs: {
+              author: 'James Clear',
+              genre: 'Self-help',
+              pages: 320
+            }
+          }
+        ],
+        'Toys': [
+          {
+            id: 401,
+            name: 'LEGO City Set',
+            description: 'Build your own city with this detailed LEGO set.',
+            price: 59.99,
+            image: 'https://media.istockphoto.com/id/521312080/photo/two-robbers-minifigures-standing-on-porch-of-museum-at-night.jpg?s=612x612&w=0&k=20&c=ErgTyV24NTsnumzZapw0hTGJcCsCdfJecgN4ODWjYes=',
+            rating: 4.7,
+            stock: 20,
+            onSale: false,
+            specs: {
+              pieces: 602,
+              age: '6+',
+              theme: 'City'
+            }
+          },
+          {
+            id: 402,
+            name: 'Remote Control Car',
+            description: 'High-speed RC car with durable design.',
+            price: 39.99,
+            image: 'https://media.istockphoto.com/id/90963018/photo/guided-by-radio-model-of-speed-car.jpg?s=612x612&w=0&k=20&c=ma674nTNjusVBq5nFtOUcEWOij37760Px3iJciVvVVo=',
+            rating: 4.5,
+            stock: 15,
+            onSale: true,
+            salePrice: 34.99,
+            specs: {
+              speed: '25 mph',
+              range: '100m',
+              battery: 'Rechargeable'
+            }
+          },
+          {
+            id: 403,
+            name: 'Barbie Dreamhouse',
+            description: 'A fully furnished dollhouse for imaginative play.',
+            price: 199.99,
+            image: 'https://media.istockphoto.com/id/1449358721/photo/small-toy-house-in-the-dark-lit-by-candlelight.jpg?s=612x612&w=0&k=20&c=dF7qKZXk9-9Vjjfzzg755SMfYLz1JnON5q7G31SBUR4=',
+            rating: 4.8,
+            stock: 10,
+            onSale: false,
+            specs: {
+              height: '3ft',
+              rooms: 8,
+              age: '3+'
+            }
+          },
+          {
+            id: 404,
+            name: 'Puzzle 1000 Pieces',
+            description: 'Challenging jigsaw puzzle with scenic artwork.',
+            price: 19.99,
+            image: 'https://media.istockphoto.com/id/2151792929/video/person-takes-puzzle-piece-from-pile.jpg?s=640x640&k=20&c=qatZV5myth-6Q4RgHpr6eUzoLzTlfNthH-kToRaGQOY=',
+            rating: 4.6,
+            stock: 25,
+            onSale: true,
+            salePrice: 17.99,
+            specs: {
+              pieces: 1000,
+              difficulty: 'Medium',
+              age: '12+'
+            }
+          },
+          {
+            id: 405,
+            name: 'Action Figure Set',
+            description: 'Set of 5 superhero action figures.',
+            price: 29.99,
+            image: 'https://via.placeholder.com/400/16a085/FFFFFF?text=Action+Figures',
+            rating: 4.4,
+            stock: 18,
+            onSale: false,
+            specs: {
+              height: '6 inches',
+              material: 'Plastic',
+              age: '4+'
+            }
+          },
+          {
+            id: 406,
+            name: 'Plush Teddy Bear',
+            description: 'Soft and cuddly teddy bear for all ages.',
+            price: 24.99,
+            image: 'https://via.placeholder.com/400/2c3e50/FFFFFF?text=Teddy+Bear',
+            rating: 4.7,
+            stock: 30,
+            onSale: true,
+            salePrice: 19.99,
+            specs: {
+              size: '18 inches',
+              material: 'Polyester',
+              color: 'Brown'
+            }
+          },
+          {
+            id: 407,
+            name: 'Drone with Camera',
+            description: 'Kid-friendly drone with HD camera.',
+            price: 79.99,
+            image: 'https://via.placeholder.com/400/d35400/FFFFFF?text=Drone',
+            rating: 4.5,
+            stock: 12,
+            onSale: false,
+            specs: {
+              flightTime: '15 minutes',
+              camera: '720p',
+              range: '50m'
+            }
+          },
+          {
+            id: 408,
+            name: 'Board Game: Monopoly',
+            description: 'Classic family board game.',
+            price: 29.99,
+            image: 'https://via.placeholder.com/400/8e44ad/FFFFFF?text=Monopoly',
+            rating: 4.6,
+            stock: 20,
+            onSale: true,
+            salePrice: 24.99,
+            specs: {
+              players: '2-8',
+              age: '8+',
+              duration: '1-3 hours'
+            }
+          }
+        ],
+        'Home & Kitchen': [
+          {
+            id: 501,
+            name: 'Air Fryer',
+            description: 'Healthy cooking with less oil.',
+            price: 99.99,
+            image: 'https://via.placeholder.com/400/9b59b6/FFFFFF?text=Air+Fryer',
+            rating: 4.7,
+            stock: 15,
+            onSale: true,
+            salePrice: 89.99,
+            specs: {
+              capacity: '5.8qt',
+              power: '1700W',
+              features: 'Digital display'
+            }
+          },
+          {
+            id: 502,
+            name: 'Coffee Maker',
+            description: 'Brew perfect coffee every morning.',
+            price: 49.99,
+            image: 'https://via.placeholder.com/400/3498db/FFFFFF?text=Coffee+Maker',
+            rating: 4.5,
+            stock: 20,
+            onSale: false,
+            specs: {
+              capacity: '12 cups',
+              features: 'Programmable',
+              material: 'Stainless Steel'
+            }
+          },
+          {
+            id: 503,
+            name: 'Non-Stick Cookware Set',
+            description: '10-piece set for all your cooking needs.',
+            price: 149.99,
+            image: 'https://via.placeholder.com/400/e74c3c/FFFFFF?text=Cookware+Set',
+            rating: 4.8,
+            stock: 10,
+            onSale: true,
+            salePrice: 129.99,
+            specs: {
+              pieces: 10,
+              material: 'Aluminum',
+              compatibility: 'All stovetops'
+            }
+          },
+          {
+            id: 504,
+            name: 'Blender Pro',
+            description: 'Powerful blender for smoothies and more.',
+            price: 79.99,
+            image: 'https://via.placeholder.com/400/16a085/FFFFFF?text=Blender',
+            rating: 4.6,
+            stock: 18,
+            onSale: false,
+            specs: {
+              power: '1200W',
+              capacity: '64oz',
+              speeds: 5
+            }
+          },
+          {
+            id: 505,
+            name: 'Electric Kettle',
+            description: 'Fast-boiling kettle with auto shut-off.',
+            price: 39.99,
+            image: 'https://via.placeholder.com/400/2c3e50/FFFFFF?text=Kettle',
+            rating: 4.5,
+            stock: 25,
+            onSale: true,
+            salePrice: 34.99,
+            specs: {
+              capacity: '1.7L',
+              material: 'Stainless Steel',
+              power: '1500W'
+            }
+          },
+          {
+            id: 506,
+            name: 'Vacuum Cleaner',
+            description: 'Powerful suction for deep cleaning.',
+            price: 129.99,
+            image: 'https://via.placeholder.com/400/d35400/FFFFFF?text=Vacuum',
+            rating: 4.7,
+            stock: 12,
+            onSale: false,
+            specs: {
+              power: '1200W',
+              type: 'Corded',
+              features: 'HEPA filter'
+            }
+          },
+          {
+            id: 507,
+            name: 'Microwave Oven',
+            description: 'Compact microwave with multiple settings.',
+            price: 89.99,
+            image: 'https://via.placeholder.com/400/8e44ad/FFFFFF?text=Microwave',
+            rating: 4.4,
+            stock: 15,
+            onSale: true,
+            salePrice: 79.99,
+            specs: {
+              capacity: '0.9 cu.ft.',
+              power: '900W',
+              features: 'Digital controls'
+            }
+          },
+          {
+            id: 508,
+            name: 'Cutlery Set',
+            description: '16-piece stainless steel cutlery set.',
+            price: 59.99,
+            image: 'https://via.placeholder.com/400/3498db/FFFFFF?text=Cutlery',
+            rating: 4.6,
+            stock: 20,
+            onSale: false,
+            specs: {
+              pieces: 16,
+              material: 'Stainless Steel',
+              dishwasherSafe: 'Yes'
+            }
+          }
+        ],
+        'Sports': [
+          {
+            id: 601,
+            name: 'Yoga Mat',
+            description: 'Non-slip mat for yoga and workouts.',
+            price: 29.99,
+            image: 'https://via.placeholder.com/400/1abc9c/FFFFFF?text=Yoga+Mat',
+            rating: 4.6,
+            stock: 25,
+            onSale: true,
+            salePrice: 24.99,
+            specs: {
+              thickness: '6mm',
+              material: 'PVC',
+              length: '72 inches'
+            }
+          },
+          {
+            id: 602,
+            name: 'Basketball',
+            description: 'Official size and weight basketball.',
+            price: 19.99,
+            image: 'https://via.placeholder.com/400/f39c12/FFFFFF?text=Basketball',
+            rating: 4.5,
+            stock: 30,
+            onSale: false,
+            specs: {
+              size: 7,
+              material: 'Rubber',
+              use: 'Indoor/Outdoor'
+            }
+          },
+          {
+            id: 603,
+            name: 'Tennis Racket',
+            description: 'Lightweight racket for all skill levels.',
+            price: 49.99,
+            image: 'https://via.placeholder.com/400/e74c3c/FFFFFF?text=Tennis+Racket',
+            rating: 4.7,
+            stock: 15,
+            onSale: true,
+            salePrice: 44.99,
+            specs: {
+              weight: '280g',
+              material: 'Graphite',
+              gripSize: '4 1/4"'
+            }
+          },
+          {
+            id: 604,
+            name: 'Fitness Tracker',
+            description: 'Track steps, calories, and sleep.',
+            price: 39.99,
+            image: 'https://via.placeholder.com/400/3498db/FFFFFF?text=Fitness+Tracker',
+            rating: 4.4,
+            stock: 20,
+            onSale: false,
+            specs: {
+              display: 'OLED',
+              batteryLife: '5 days',
+              waterproof: 'IP68'
+            }
+          },
+          {
+            id: 605,
+            name: 'Dumbbell Set',
+            description: 'Adjustable dumbbells for home workouts.',
+            price: 99.99,
+            image: 'https://via.placeholder.com/400/16a085/FFFFFF?text=Dumbbells',
+            rating: 4.8,
+            stock: 10,
+            onSale: true,
+            salePrice: 89.99,
+            specs: {
+              weightRange: '5-25 lbs',
+              material: 'Steel',
+              pieces: 2
+            }
+          },
+          {
+            id: 606,
+            name: 'Soccer Ball',
+            description: 'Durable ball for matches and practice.',
+            price: 24.99,
+            image: 'https://via.placeholder.com/400/2c3e50/FFFFFF?text=Soccer+Ball',
+            rating: 4.6,
+            stock: 25,
+            onSale: false,
+            specs: {
+              size: 5,
+              material: 'Polyurethane',
+              use: 'Outdoor'
+            }
+          },
+          {
+            id: 607,
+            name: 'Camping Tent',
+            description: 'Waterproof tent for outdoor adventures.',
+            price: 129.99,
+            image: 'https://via.placeholder.com/400/d35400/FFFFFF?text=Tent',
+            rating: 4.7,
+            stock: 8,
+            onSale: true,
+            salePrice: 109.99,
+            specs: {
+              capacity: '4 persons',
+              material: 'Polyester',
+              waterproof: '2000mm'
+            }
+          },
+          {
+            id: 608,
+            name: 'Cycling Helmet',
+            description: 'Lightweight helmet with ventilation.',
+            price: 34.99,
+            image: 'https://via.placeholder.com/400/8e44ad/FFFFFF?text=Helmet',
+            rating: 4.5,
+            stock: 18,
+            onSale: false,
+            specs: {
+              size: 'M/L',
+              material: 'Polycarbonate',
+              vents: 22
+            }
+          }
+        ]
+      };
+
+    // Global state
+    let cart = [];
+    let currentUser = null;
+    let currentCategory = null;
+    let currentProduct = null;
+    let originalProductsList = [];
+
+    // Navigation
+    function navigate(section, params = {}) {
+      document.querySelectorAll('.section').forEach(sec => {
+        sec.classList.remove('active');
+      });
+      
+      document.getElementById(section).classList.add('active');
+      
+      switch(section) {
+        case 'home':
+          loadCategories();
+          break;
+        case 'products':
+          if (params.categoryId) {
+            loadProducts(params.categoryId);
+          }
+          break;
+        case 'product-detail':
+          if (params.productId) {
+            loadProductDetail(params.productId);
+          }
+          break;
+        case 'cart':
+          updateCartView();
+          break;
+        case 'profile':
+          updateProfileView();
+          break;
+      }
+      
+      window.scrollTo(0, 0);
+    }
+
+    // Categories
+    function loadCategories() {
+      const categoriesList = document.getElementById('categories-list');
+      categoriesList.innerHTML = '';
+      
+      categoriesData.forEach(category => {
+        const categoryElement = document.createElement('div');
+        categoryElement.className = 'category';
+        categoryElement.innerHTML = `
+          <div class="category-img" style="background-image: url('${category.image}')"></div>
+          <div class="category-content">
+            <h3 class="category-name">${category.name}</h3>
+            <p class="category-desc">${category.description}</p>
+          </div>
+        `;
+        
+        categoryElement.addEventListener('click', () => {
+          navigate('products', { categoryId: category.id });
+        });
+        
+        categoriesList.appendChild(categoryElement);
+      });
+    }
+
+    // Products
+    function loadProducts(categoryId) {
+      const category = categoriesData.find(cat => cat.id === categoryId);
+      currentCategory = category;
+      
+      if (category) {
+        document.getElementById('category-name').textContent = category.name;
+        const productList = document.getElementById('product-list');
+        productList.innerHTML = '';
+        
+        const products = productsData[category.name] || [];
+        originalProductsList = [...products];
+        
+        displayProducts(products);
+        
+        document.getElementById('back-to-products').addEventListener('click', () => {
+          navigate('products', { categoryId: categoryId });
+        });
+      }
+    }
+
+    function displayProducts(products) {
+      const productList = document.getElementById('product-list');
+      productList.innerHTML = '';
+      
+      products.forEach(product => {
+        const productElement = document.createElement('div');
+        productElement.className = 'product';
+        
+        const displayPrice = product.onSale ? product.salePrice : product.price;
+        const priceHtml = product.onSale 
+          ? `<span class="product-price">$${displayPrice.toFixed(2)}</span> <s>$${product.price.toFixed(2)}</s>` 
+          : `<span class="product-price">$${displayPrice.toFixed(2)}</span>`;
+        
+        productElement.innerHTML = `
+          <div class="product-img" style="background-image: url('${product.image}')"></div>
+          <div class="product-content">
+            <span class="product-category">${currentCategory.name}</span>
+            <h3 class="product-name">${product.name}</h3>
+            <p class="product-desc">${product.description}</p>
+            <div class="product-details">
+              <div>${priceHtml}</div>
+              <div class="product-rating">
+                <span>★</span> ${product.rating}
+              </div>
+            </div>
+            <button class="product-btn" onclick="addToCart(${product.id})">Add to Cart</button>
+          </div>
+        `;
+        
+        productElement.addEventListener('click', (e) => {
+          if (!e.target.classList.contains('product-btn')) {
+            navigate('product-detail', { productId: product.id });
+          }
+        });
+        
+        productList.appendChild(productElement);
+      });
+    }
+
+    function sortProducts() {
+      const sortValue = document.getElementById('sort-select').value;
+      let sortedProducts = [...originalProductsList];
+      
+      switch(sortValue) {
+        case 'price-low':
+          sortedProducts.sort((a, b) => (a.onSale ? a.salePrice : a.price) - (b.onSale ? b.salePrice : b.price));
+          break;
+        case 'price-high':
+          sortedProducts.sort((a, b) => (b.onSale ? b.salePrice : b.price) - (a.onSale ? a.salePrice : a.price));
+          break;
+        case 'rating':
+          sortedProducts.sort((a, b) => b.rating - a.rating);
+          break;
+        default:
+          break;
+      }
+      
+      filterProducts(sortedProducts);
+    }
+
+    function filterProducts(productsToFilter = null) {
+      const filterValue = document.getElementById('filter-select').value;
+      let filteredProducts = productsToFilter || [...originalProductsList];
+      
+      switch(filterValue) {
+        case 'in-stock':
+          filteredProducts = filteredProducts.filter(p => p.stock > 0);
+          break;
+        case 'on-sale':
+          filteredProducts = filteredProducts.filter(p => p.onSale);
+          break;
+        default:
+          break;
+      }
+      
+      displayProducts(filteredProducts);
+    }
+
+    // Product Detail
+    function loadProductDetail(productId) {
+      const products = productsData[currentCategory.name] || [];
+      const product = products.find(p => p.id === productId);
+      currentProduct = product;
+      
+      if (product) {
+        const productDetailContent = document.getElementById('product-detail-content');
+        
+        const displayPrice = product.onSale ? product.salePrice : product.price;
+        const priceHtml = product.onSale 
+          ? `$${displayPrice.toFixed(2)} <s class="regular-price">$${product.price.toFixed(2)}</s>` 
+          : `$${displayPrice.toFixed(2)}`;
+        
+        let specItemsHtml = '';
+        for (const [key, value] of Object.entries(product.specs)) {
+          const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
+          let formattedValue = value;
+          
+          if (Array.isArray(value)) {
+            formattedValue = value.join(', ');
+          }
+          
+          specItemsHtml += `
+            <div class="meta-item">
+              <span class="meta-label">${formattedKey}</span>
+              <span>${formattedValue}</span>
+            </div>
+          `;
+        }
+        
+        productDetailContent.innerHTML = `
+          <div class="product-detail-img" style="background-image: url('${product.image}')"></div>
+          <div class="product-detail-content">
+            <span class="product-detail-category">${currentCategory.name}</span>
+            <h1 class="product-detail-name">${product.name}</h1>
+            <div class="product-detail-price">${priceHtml}</div>
+            <div class="product-rating">
+              <span>★</span> ${product.rating}
+            </div>
+            <p class="product-detail-desc">${product.description}</p>
+            <div class="product-detail-meta">
+              <div class="meta-item">
+                <span class="meta-label">Stock</span>
+                <span>${product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</span>
+              </div>
+              ${specItemsHtml}
+            </div>
+            <div class="product-detail-actions">
+              <div class="quantity-selector">
+                <button onclick="changeQuantity('decrease')">-</button>
+                <input type="number" id="product-quantity" value="1" min="1" max="${product.stock}">
+                <button onclick="changeQuantity('increase')">+</button>
+              </div>
+              <button class="add-to-cart-btn" onclick="addToCartFromDetail()">Add to Cart</button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function changeQuantity(action) {
+      const quantityInput = document.getElementById('product-quantity');
+      let quantity = parseInt(quantityInput.value);
+      
+      if (action === 'increase') {
+        if (quantity < currentProduct.stock) {
+          quantity++;
+        }
+      } else if (action === 'decrease') {
+        if (quantity > 1) {
+          quantity--;
+        }
+      }
+      
+      quantityInput.value = quantity;
+    }
+
+    // Cart Functions
+    function addToCart(productId) {
+      const products = productsData[currentCategory.name] || [];
+      const product = products.find(p => p.id === productId);
+      
+      if (product) {
+        const existingItem = cart.find(item => item.product.id === productId);
+        
+        if (existingItem) {
+          if (existingItem.quantity < product.stock) {
+            existingItem.quantity++;
+            showToast('Product quantity updated in cart', 'success');
+          } else {
+            showToast('No more stock available', 'error');
+          }
+        } else {
+          cart.push({
+            product: product,
+            quantity: 1
+          });
+          showToast('Product added to cart', 'success');
+        }
+        
+        updateCartCounter();
+      }
+    }
+
+    function addToCartFromDetail() {
+      const quantityInput = document.getElementById('product-quantity');
+      const quantity = parseInt(quantityInput.value);
+      
+      if (currentProduct) {
+        const existingItem = cart.find(item => item.product.id === currentProduct.id);
+        
+        if (existingItem) {
+          const newQuantity = existingItem.quantity + quantity;
+          
+          if (newQuantity <= currentProduct.stock) {
+            existingItem.quantity = newQuantity;
+            showToast('Product quantity updated in cart', 'success');
+          } else {
+            showToast('Not enough stock available', 'error');
+          }
+        } else {
+          cart.push({
+            product: currentProduct,
+            quantity: quantity
+          });
+          showToast('Product added to cart', 'success');
+        }
+        
+        updateCartCounter();
+      }
+    }
+
+    function updateCartCounter() {
+      const cartCounter = document.getElementById('cartCounter');
+      const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+      cartCounter.textContent = totalItems;
+    }
+
+    function updateCartView() {
+      const cartEmpty = document.getElementById('cart-empty');
+      const cartItemsContainer = document.getElementById('cart-items-container');
+      
+      if (cart.length === 0) {
+        cartEmpty.style.display = 'block';
+        cartItemsContainer.style.display = 'none';
+      } else {
+        cartEmpty.style.display = 'none';
+        cartItemsContainer.style.display = 'block';
+        
+        const cartItemsElement = document.getElementById('cart-items');
+        cartItemsElement.innerHTML = '';
+        
+        cart.forEach(item => {
+          const product = item.product;
+          const displayPrice = product.onSale ? product.salePrice : product.price;
+          const totalPrice = displayPrice * item.quantity;
+          
+          const cartItemElement = document.createElement('div');
+          cartItemElement.className = 'cart-item';
+          cartItemElement.innerHTML = `
+            <div class="cart-item-img" style="background-image: url('${product.image}')"></div>
+            <div class="cart-item-details">
+              <h3>${product.name}</h3>
+              <p>Category: ${product.category || ''}</p>
+            </div>
+            <div class="cart-item-price">$${displayPrice.toFixed(2)} x ${item.quantity} = $${totalPrice.toFixed(2)}</div>
+            <div class="cart-item-quantity">
+              <button class="quantity-btn" onclick="updateCartItemQuantity(${product.id}, 'decrease')">-</button>
+              <input class="quantity-input" type="number" value="${item.quantity}" min="1" max="${product.stock}" onchange="updateCartItemQuantity(${product.id}, 'input', this.value)">
+              <button class="quantity-btn" onclick="updateCartItemQuantity(${product.id}, 'increase')">+</button>
+              <button class="quantity-btn" style="margin-left: 8px;" onclick="removeFromCart(${product.id})">×</button>
+            </div>
+          `;
+          
+          cartItemsElement.appendChild(cartItemElement);
+        });
+        
+        updateCartSummary();
+      }
+    }
+
+    function updateCartItemQuantity(productId, action, value = null) {
+      const cartItem = cart.find(item => item.product.id === productId);
+      
+      if (cartItem) {
+        if (action === 'increase') {
+          if (cartItem.quantity < cartItem.product.stock) {
+            cartItem.quantity++;
+          }
+        } else if (action === 'decrease') {
+          if (cartItem.quantity > 1) {
+            cartItem.quantity--;
+          } else {
+            removeFromCart(productId);
+            return;
+          }
+        } else if (action === 'input') {
+          const newQuantity = parseInt(value);
+          if (!isNaN(newQuantity) && newQuantity >= 1) {
+            cartItem.quantity = Math.min(newQuantity, cartItem.product.stock);
+          }
+        }
+        
+        updateCartView();
+        updateCartCounter();
+      }
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.product.id !== productId);
+      updateCartView();
+      updateCartCounter();
+      showToast('Product removed from cart', 'success');
+    }
+
+    function updateCartSummary() {
+      const subtotal = cart.reduce((total, item) => {
+        const price = item.product.onSale ? item.product.salePrice : item.product.price;
+        return total + (price * item.quantity);
+      }, 0);
+      
+      const shipping = subtotal > 50 ? 0 : 10;
+      const tax = subtotal * 0.08;
+      const total = subtotal + shipping + tax;
+      
+      document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('cart-shipping').textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
+      document.getElementById('cart-tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+    }
+
+    function checkout() {
+      if (!currentUser) {
+        showToast('Please login to checkout', 'error');
+        navigate('login');
+        return;
+      }
+      
+      showToast('Order placed successfully!', 'success');
+      cart = [];
+      updateCartCounter();
+      navigate('home');
+    }
+
+    // Authentication
+    function loginUser() {
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      
+      if (!username || !password) {
+        showToast('Please enter username and password', 'error');
+        return;
+      }
+      
+      setTimeout(() => {
+        currentUser = {
+          username: username,
+          name: 'Demo User',
+          email: 'demo@example.com'
+        };
+        
+        updateAuthUI();
+        showToast('Login successful', 'success');
+        navigate('home');
+      }, 1000);
+    }
+
+    function signupUser() {
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const username = document.getElementById('signup-username').value;
+      const password = document.getElementById('signup-password').value;
+      
+      if (!name || !email || !username || !password) {
+        showToast('Please fill all fields', 'error');
+        return;
+      }
+      
+      setTimeout(() => {
+        currentUser = {
+          username: username,
+          name: name,
+          email: email
+        };
+        
+        updateAuthUI();
+        showToast('Signup successful', 'success');
+        navigate('home');
+      }, 1000);
+    }
+
+    function logoutUser() {
+      currentUser = null;
+      updateAuthUI();
+      showToast('Logout successful', 'success');
+      navigate('home');
+    }
+
+    function updateAuthUI() {
+      const loginLink = document.getElementById('loginLink');
+      const signupLink = document.getElementById('signupLink');
+      const profileLink = document.getElementById('profileLink');
+      const userStatus = document.getElementById('userStatus');
+      
+      if (currentUser) {
+        loginLink.style.display = 'none';
+        signupLink.style.display = 'none';
+        profileLink.style.display = 'inline-block';
+        userStatus.textContent = `Welcome, ${currentUser.username}!`;
+      } else {
+        loginLink.style.display = 'inline-block';
+        signupLink.style.display = 'inline-block';
+        profileLink.style.display = 'none';
+        userStatus.textContent = '';
+      }
+    }
+
+    function updateProfileView() {
+      if (!currentUser) {
+        navigate('login');
+        return;
+      }
+      
+      document.getElementById('profile-username').textContent = currentUser.username;
+      document.getElementById('profile-name').textContent = currentUser.name;
+      document.getElementById('profile-email').textContent = currentUser.email;
+    }
+
+    // Toast Notifications
+    function showToast(message, type) {
+      const toastContainer = document.getElementById('toast-container');
+      
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      
+      toast.innerHTML = `
+        <span class="toast-icon">${type === 'success' ? '✓' : '!'}</span>
+        <div class="toast-content">${message}</div>
+        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 5000);
+    }
+
+    // Initialize application
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCategories();
+      updateAuthUI();
+      updateCartCounter();
+    });
+  </script>
+</body>
+</html>
